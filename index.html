@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DjagaMaga — Artist | Content Creator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #101012;
+  --bg-elevated: #161618;
+  --bg-card: #1a1a1d;
+  --bg-hover: #202024;
+  --border: #232328;
+  --border-hover: #333338;
+  --text: #dcdce0;
+  --text-secondary: #7c7c86;
+  --text-dim: #4a4a52;
+  --accent: #6ee7a0;
+  --accent-muted: rgba(110, 231, 160, 0.12);
+  --accent-subtle: rgba(110, 231, 160, 0.06);
+  --font: 'Instrument Sans', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cursor-glow {
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(110,231,160,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s;
+  opacity: 0;
+}
+body:hover .cursor-glow { opacity: 1; }
+
+.noise {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 10000;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.scroll-bar {
+  position: fixed; top: 0; left: 0;
+  height: 1px;
+  background: var(--accent);
+  z-index: 100001;
+  opacity: 0.6;
+}
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 10001;
+  padding: 20px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+  backdrop-filter: blur(24px);
+  background: rgba(16,16,18,0.8);
+  border-bottom: 1px solid transparent;
+  transition: all 0.4s;
+}
+nav.scrolled { border-bottom-color: var(--border); padding: 14px 48px; }
+
+.logo {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo span { opacity: 0.4; }
+
+.nav-links { display: flex; gap: 36px; align-items: center; }
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  color: var(--bg) !important;
+  background: var(--accent);
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px;
+  transition: opacity 0.3s, transform 0.3s !important;
+}
+.nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+.nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.nav-toggle span { width: 20px; height: 1.5px; background: var(--text); transition: 0.3s; }
+
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 140px 48px 100px;
+  position: relative;
+}
+.hero-grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(35,35,40,0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35,35,40,0.4) 1px, transparent 1px);
+  background-size: 100px 100px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 40%, black 20%, transparent 100%);
+  opacity: 0.3;
+}
+.hero-orb {
+  position: absolute; border-radius: 50%; filter: blur(120px);
+}
+.hero-orb-1 { width: 400px; height: 400px; background: var(--accent); top: 10%; right: 10%; opacity: 0.04; }
+.hero-orb-2 { width: 300px; height: 300px; background: var(--accent); bottom: 15%; left: 5%; opacity: 0.03; }
+
+.hero-content {
+  text-align: center;
+  position: relative; z-index: 2;
+  max-width: 740px;
+}
+
+.hero-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--text-secondary);
+  margin-bottom: 36px;
+  animation: fadeUp 0.7s ease both;
+}
+.hero-label .dot {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: blink 2.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.hero-title {
+  font-size: clamp(44px, 7vw, 80px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -3px;
+  margin-bottom: 20px;
+  animation: fadeUp 0.7s ease 0.05s both;
+}
+.hero-title .highlight { color: var(--accent); }
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-weight: 400;
+  max-width: 520px;
+  margin: 0 auto 36px;
+  animation: fadeUp 0.7s ease 0.1s both;
+}
+
+.hero-actions {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp 0.7s ease 0.15s both;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 12px 28px;
+  font-size: 14px; font-weight: 600; font-family: var(--font);
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer; border: none;
+  transition: all 0.3s;
+}
+.btn-fill { background: var(--accent); color: var(--bg); }
+.btn-fill:hover { opacity: 0.85; transform: translateY(-2px); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--border-hover); background: var(--bg-elevated); }
+
+.hero-chips {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  margin-top: 56px;
+  animation: fadeUp 0.7s ease 0.25s both;
+}
+.hero-chip {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+.hero-chip b { color: var(--text); font-weight: 600; font-size: 15px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.marquee {
+  overflow: hidden;
+  padding: 18px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.marquee-track {
+  display: flex; gap: 40px;
+  animation: scroll 35s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.marquee-item::before {
+  content: ''; width: 4px; height: 4px;
+  background: var(--accent); border-radius: 50%; opacity: 0.5;
+}
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+section { padding: 100px 48px; }
+.container { max-width: 1080px; margin: 0 auto; }
+
+.sec-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+.sec-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.sec-desc {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.about-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 56px;
+}
+.about-avatar {
+  overflow: hidden;
+  min-width: 280px;
+  width: 280px; height: 280px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 120px;
+  position: relative;
+  transition: border-color 0.4s;
+}.about-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.about-avatar:hover { border-color: var(--border-hover); }
+.about-avatar-tag {
+  position: absolute;
+  bottom: 12px; left: 12px;
+  padding: 6px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.about-body p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 15px;
+  margin-bottom: 16px;
+}
+.about-body strong { color: var(--text); font-weight: 600; }
+
+.tag-row {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 28px;
+}
+.tag {
+  padding: 6px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  transition: border-color 0.3s;
+}
+.tag:hover { border-color: var(--border-hover); }
+
+.project-main {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 44px;
+  margin-top: 48px;
+  transition: border-color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.project-main:hover { border-color: var(--border-hover); }
+
+.project-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap; gap: 12px;
+}
+.project-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.project-badge {
+  padding: 5px 14px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+.stat:hover { border-color: var(--border-hover); }
+.stat-val {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--text);
+  display: block;
+  letter-spacing: -1px;
+}
+.stat-val .plus { color: var(--accent); font-weight: 400; }
+.stat-lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 6px;
+}
+
+.project-text {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.minor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.minor {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.minor:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+.minor h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.minor p { color: var(--text-secondary); font-size: 13px; line-height: 1.6; }
+.minor-label {
+  display: inline-block; margin-top: 10px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 48px;
+}
+.art-card {
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.art-card:hover { transform: scale(1.02); border-color: var(--border-hover); }
+.art-card.big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+
+.art-bg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px; opacity: 0.35;
+  transition: opacity 0.3s, transform 0.4s;
+}
+.art-card:hover .art-bg { opacity: 0.55; transform: scale(1.08); }
+
+.art-info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(16,16,18,0.95), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.art-card:hover .art-info { opacity: 1; }
+.art-info h4 { font-size: 14px; font-weight: 600; }
+.art-info span { font-size: 11px; color: var(--text-dim); font-family: var(--mono); }
+
+.portfolio-hint {
+  text-align: center;
+  margin-top: 36px;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: var(--mono);
+}
+.portfolio-hint a { color: var(--accent); text-decoration: none; opacity: 0.7; }
+.portfolio-hint a:hover { opacity: 1; }
+
+.load-more-btn {
+  display: block;
+  margin: 32px auto 0;
+  padding: 12px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.3s, color 0.3s;
+}
+.load-more-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.load-more-btn.hidden { display: none; }
+
+.art-card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.art-card:hover img { transform: scale(1.06); }
+
+/* Lightbox */
+.lightbox {
+  position: fixed; inset: 0;
+  background: rgba(10,10,12,0.92);
+  backdrop-filter: blur(20px);
+  z-index: 100002;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+  cursor: zoom-out;
+}
+.lightbox.open { opacity: 1; pointer-events: auto; }
+.lightbox img {
+  max-width: 90vw; max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.lightbox-counter {
+  position: absolute; bottom: 24px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.lightbox-nav {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  width: 48px; height: 48px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.3s;
+}
+.lightbox-nav:hover { border-color: var(--border-hover); }
+.lightbox-prev { left: 24px; }
+.lightbox-next { right: 24px; }
+.lightbox-close {
+  position: absolute; top: 24px; right: 24px;
+  width: 40px; height: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.contact-wrap { text-align: center; max-width: 640px; margin: 0 auto; }
+
+.contact-links {
+  display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+  margin-top: 40px;
+}
+.c-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.c-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+.c-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--accent-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.c-card h4 { font-size: 14px; font-weight: 600; }
+.c-card span { font-size: 11px; color: var(--text-dim); font-family: var(--mono); }
+
+footer {
+  text-align: center;
+  padding: 32px 48px;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: var(--mono);
+}
+
+.rv {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.rv.vis { opacity: 1; transform: translateY(0); }
+.rv-d1 { transition-delay: 0.08s; }
+.rv-d2 { transition-delay: 0.16s; }
+.rv-d3 { transition-delay: 0.24s; }
+
+@media (max-width: 768px) {
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  .nav-links.open {
+    display: flex; flex-direction: column;
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 16px 20px; gap: 12px;
+  }
+  section { padding: 64px 20px; }
+  .hero { padding: 100px 20px 64px; }
+  .about-layout { grid-template-columns: 1fr; gap: 32px; }
+  .about-avatar { width: 200px; height: 200px; font-size: 80px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .art-card.big { grid-column: span 1; grid-row: span 1; }
+  .hero-chips { gap: 14px; }
+  .contact-links { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="glow"></div>
+<div class="noise"></div>
+<div class="scroll-bar" id="scrollBar"></div>
+
+<nav id="nav">
+  <a href="#" class="logo">🦍 <span>/</span> djagamaga</a>
+  <div class="nav-links" id="navLinks">
+    <a href="#about">About</a>
+    <a href="#impact">Impact</a>
+    <a href="#art">Art</a>
+    <a href="#contact" class="nav-cta">Contact</a>
+  </div>
+  <div class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-content">
+    <div class="hero-label"><span class="dot"></span>Open for collaborations</div>
+    <h1 class="hero-title"><span class="highlight">Djaga</span>Maga</h1>
+    <p class="hero-sub">Hand-drawing artist & content creator in Web3. Building communities, creating art, and leaving real impact in crypto since 2021.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn btn-fill">Get in Touch</a>
+      <a href="#art" class="btn btn-ghost">View Art →</a>
+    </div>
+    <div class="hero-chips">
+      <div class="hero-chip"><b>4+</b> years in crypto</div>
+      <div class="hero-chip"><b>700+</b> posts on X</div>
+      <div class="hero-chip"><b>🦍</b> gorilla gang</div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item">Hand-Drawn Art</span>
+    <span class="marquee-item">Community Building</span>
+    <span class="marquee-item">Discord Active</span>
+    <span class="marquee-item">Content Creation</span>
+    <span class="marquee-item">Web3 Native</span>
+    <span class="marquee-item">Sentient Early AGI</span>
+    <span class="marquee-item">Voice Chat OG</span>
+    <span class="marquee-item">Event Participant</span>
+    <span class="marquee-item">Hand-Drawn Art</span>
+    <span class="marquee-item">Community Building</span>
+    <span class="marquee-item">Discord Active</span>
+    <span class="marquee-item">Content Creation</span>
+    <span class="marquee-item">Web3 Native</span>
+    <span class="marquee-item">Sentient Early AGI</span>
+    <span class="marquee-item">Voice Chat OG</span>
+    <span class="marquee-item">Event Participant</span>
+  </div>
+</div>
+
+<section id="about">
+  <div class="container">
+    <div class="sec-label rv">About</div>
+    <div class="sec-title rv rv-d1">The gorilla behind the art</div>
+    <div class="about-layout">
+      <div class="rv rv-d1">
+        <div class="about-avatar">
+  <img src="images/avatar.jpg" alt="DjagaMaga">
+  <div class="about-avatar-tag">since 2021</div>
+</div>
+      </div>
+      <div class="about-body">
+        <p class="rv rv-d1">I'm <strong>DjagaMaga</strong> — a hand-drawing artist and content creator who's been deep in crypto since 2021. My tools are simple: pen, paper, and dedication.</p>
+        <p class="rv rv-d2">When I join a project, I go all in. I don't just lurk — I draw, I talk, I show up. My biggest showcase is <strong>Sentient</strong>, where I created 100+ original artworks and became one of the most active community members.</p>
+        <p class="rv rv-d3">I'm always active on <strong>X</strong> and <strong>Discord</strong> — creating content, engaging with communities, and connecting with builders. If your project needs a dedicated artist and real community presence — let's talk.</p>
+        <div class="tag-row rv rv-d3">
+          <span class="tag">✏️ Hand-Drawing</span>
+          <span class="tag">🎙️ Voice Chat</span>
+          <span class="tag">📢 Content</span>
+          <span class="tag">🦍 Community OG</span>
+          <span class="tag">⛓️ Web3</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="impact">
+  <div class="container">
+    <div class="sec-label rv">Impact & Achievements</div>
+    <div class="sec-title rv rv-d1">Projects I've built with</div>
+    <div class="project-main rv rv-d2">
+      <div class="project-top">
+        <h3 class="project-name">🧠 Sentient</h3>
+        <span class="project-badge">Early AGI · Core Contributor</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat">
+          <span class="stat-val"><span class="counter" data-target="100">0</span><span class="plus">+</span></span>
+          <div class="stat-lbl">Artworks</div>
+        </div>
+        <div class="stat">
+          <span class="stat-val"><span class="counter" data-target="40">0</span><span class="plus">+</span></span>
+          <div class="stat-lbl">VC Hours</div>
+        </div>
+        <div class="stat">
+          <span class="stat-val"><span class="counter" data-target="80">0</span><span class="plus">+</span></span>
+          <div class="stat-lbl">Events</div>
+        </div>
+        <div class="stat">
+          <span class="stat-val">OG</span>
+          <div class="stat-lbl">Status</div>
+        </div>
+      </div>
+      <p class="project-text">My flagship project. Joined early and became one of the most impactful community members — 100+ unique hand-drawn artworks, 40+ hours in voice channels, and 80+ events attended. This is what full dedication looks like.</p>
+    </div>
+    <div class="minor-grid rv rv-d3">
+      <div class="minor">
+        <h4>🔗 Other Projects</h4>
+        <p>Art contributions, content, and active Discord presence across multiple Web3 communities.</p>
+        <span class="minor-label">Community · Art · Content</span>
+      </div>
+      <div class="minor">
+        <h4>𝕏 Twitter Presence</h4>
+        <p>700+ posts sharing original art, crypto insights, and community engagement. Building in public.</p>
+        <span class="minor-label">@eldarovjr · 700+ posts</span>
+      </div>
+      <div class="minor">
+        <h4>✏️ Hand-Drawn Edge</h4>
+        <p>Every piece drawn by hand — no AI, no filters. Authentic art that stands out in a sea of generated content.</p>
+        <span class="minor-label">Pen & Paper · Original</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="art">
+  <div class="container">
+    <div style="text-align:center;">
+      <div class="sec-label rv">Portfolio</div>
+      <div class="sec-title rv rv-d1">Hand-drawn gallery</div>
+      <p class="sec-desc rv rv-d2" style="margin:12px auto 0;">Every piece drawn by hand. No AI. No filters.</p>
+    </div>
+    <div class="portfolio-grid rv rv-d2" id="gallery"></div>
+    <button class="load-more-btn rv" id="loadMore">Show more artworks</button>
+    <p class="portfolio-hint rv">Full collection on <a href="https://x.com/eldarovjr" target="_blank">@eldarovjr</a></p>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="sec-label rv">Contact</div>
+    <div class="sec-title rv rv-d1">Let's collaborate</div>
+    <p class="sec-desc rv rv-d2" style="margin:8px auto 0;">Need a dedicated artist and community contributor? Reach out.</p>
+    <div class="contact-links rv rv-d3">
+      <a href="https://x.com/eldarovjr" target="_blank" class="c-card">
+        <div class="c-icon">𝕏</div>
+        <div><h4>X (Twitter)</h4><span>@eldarovjr</span></div>
+      </a>
+      <a href="https://discord.com/users/651861007311962142" class="c-card">
+        <div class="c-icon">💬</div>
+        <div><h4>Discord</h4><span>DjagaMaga</span></div>
+      </a>
+      <a href="https://t.me/eldarovjr" class="c-card">
+        <div class="c-icon">✈️</div>
+        <div><h4>Telegram</h4><span>@DjagaMaga</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>🦍 DjagaMaga · 2026</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)">‹</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-nav lightbox-next" onclick="navLightbox(1)">›</button>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
+<script>
+const g = document.getElementById('glow');
+document.addEventListener('mousemove', e => { g.style.left = e.clientX+'px'; g.style.top = e.clientY+'px'; });
+
+window.addEventListener('scroll', () => {
+  const s = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('scrollBar').style.width = (s/h*100)+'%';
+  document.getElementById('nav').classList.toggle('scrolled', s > 40);
+});
+
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+const cObs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting && e.target.dataset.target) {
+      const t = +e.target.dataset.target, s = performance.now();
+      (function run(now) {
+        const p = Math.min((now-s)/1800,1);
+        e.target.textContent = Math.floor((p===1?1:1-Math.pow(2,-10*p))*t);
+        if (p<1) requestAnimationFrame(run);
+      })(s);
+      cObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => cObs.observe(el));
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+document.querySelectorAll('.project-main, .c-card').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX-r.left)/r.width-0.5, y = (e.clientY-r.top)/r.height-0.5;
+    el.style.transform = `perspective(600px) rotateX(${-y*3}deg) rotateY(${x*3}deg)`;
+  });
+  el.addEventListener('mouseleave', () => el.style.transform = '');
+});
+
+// ===== GALLERY: auto-generate 104 art cards =====
+const TOTAL = 105;
+const PER_PAGE = 12;
+let shown = 0;
+const gallery = document.getElementById('gallery');
+const loadBtn = document.getElementById('loadMore');
+
+function addCards(count) {
+  const end = Math.min(shown + count, TOTAL);
+  for (let i = shown + 1; i <= end; i++) {
+    const card = document.createElement('div');
+    card.className = 'art-card' + (i === 1 ? ' big' : '');
+    card.innerHTML = `
+      <img src="images/${i}.jpg" alt="Artwork #${i}" loading="lazy">
+      <div class="art-info"><h4>Artwork #${i}</h4><span>hand-drawn · sentient collection</span></div>
+    `;
+    card.addEventListener('click', () => openLightbox(i));
+    // parallax on hover
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect(), img = card.querySelector('img');
+      if (img) {
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        img.style.transform = `scale(1.06) translate(${x*12}px,${y*12}px)`;
+      }
+    });
+    card.addEventListener('mouseleave', () => {
+      const img = card.querySelector('img');
+      if (img) img.style.transform = '';
+    });
+    gallery.appendChild(card);
+  }
+  shown = end;
+  if (shown >= TOTAL) loadBtn.classList.add('hidden');
+}
+
+addCards(PER_PAGE);
+loadBtn.addEventListener('click', () => addCards(PER_PAGE));
+
+// ===== LIGHTBOX =====
+let currentImg = 1;
+function openLightbox(n) {
+  currentImg = n;
+  document.getElementById('lightboxImg').src = `images/${n}.jpg`;
+  document.getElementById('lightboxCounter').textContent = `${n} / ${TOTAL}`;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function navLightbox(dir) {
+  currentImg += dir;
+  if (currentImg < 1) currentImg = TOTAL;
+  if (currentImg > TOTAL) currentImg = 1;
+  document.getElementById('lightboxImg').src = `images/${currentImg}.jpg`;
+  document.getElementById('lightboxCounter').textContent = `${currentImg} / ${TOTAL}`;
+}
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLightbox();
+});
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'ArrowRight') navLightbox(1);
+});
+</script>
+</body>
+</html>
